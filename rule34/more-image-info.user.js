@@ -19,6 +19,7 @@
 
     let sizeListElement = document.createElement("li");
     sizeListElement.innerHTML = "File Size: Loading...";
+    sizeListElement.id = "size-list-element";
     statsList.appendChild(sizeListElement);
 
     var val;
@@ -31,7 +32,7 @@
         let fileSize = headers["content-length"];
         let fileSizeReadable = humanFileSize(fileSize);
         let fileType = headers["content-type"].split("/")[1];
-
+        sizeListElement = statsDiv.querySelector("#size-list-element");
         sizeListElement.innerHTML = "File Size: " + fileSizeReadable + " " + fileType;
     }
 
