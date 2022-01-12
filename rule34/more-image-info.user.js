@@ -6,12 +6,21 @@
 // @author       mja00
 // @match        https://rule34.xxx/index.php?page=post&s=view&id=*
 // @icon         https://www.google.com/s2/favicons?domain=rule34.xxx
-// @downloadURL  https://raw.githubusercontent.com/mja00/userscripts/main/rule34/more-image-info.user.js
+// @downloadURL  https://raw.githubusercontent.com/mja00/userscripts/main/rule34/more-image-info.js
+// @run-at       document-end
 // @grant        none
 // ==/UserScript==
 
 (function() {
     'use strict';
+    // Since we append to a list we push content down, in order to combat this(since it'll take a little time to get the stats, we'll use a placeholder)
+    let statsDiv = document.getElementById("stats");
+    let statsList = statsDiv.getElementsByTagName("ul")[0];
+
+    let sizeListElement = document.createElement("li");
+    sizeListElement.innerHTML = "File Size: Loading...";
+    statsList.appendChild(sizeListElement);
+
     var val;
     var returned_data;
     var updateStatsDiv = function(returned_data) {
@@ -23,13 +32,7 @@
         let fileSizeReadable = humanFileSize(fileSize);
         let fileType = headers["content-type"].split("/")[1];
 
-        // Get the stats div
-        let statsDiv = document.getElementById("stats");
-        let statsList = statsDiv.getElementsByTagName("ul")[0];
-
-        let sizeListElement = document.createElement("li");
         sizeListElement.innerHTML = "File Size: " + fileSizeReadable + " " + fileType;
-        statsList.appendChild(sizeListElement);
     }
 
     // Get an image tag with the id image
