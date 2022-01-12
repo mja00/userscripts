@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rule34.xxx Image Size
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Shows image size on the statistics pane
 // @author       mja00
 // @match        https://rule34.xxx/index.php?page=post&s=view&id=*
@@ -38,6 +38,10 @@
 
     // Get an image tag with the id image
     let imageElement = document.getElementById("image");
+    let videoElements;
+    if (imageElement == null) {
+        imageElement = document.querySelector("#gelcomVideoPlayer > source");
+    }
     let imageURI = imageElement.src;
     imageURI = imageURI.split(".");
     imageURI.shift();
