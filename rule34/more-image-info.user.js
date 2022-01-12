@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rule34.xxx Image Size
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  Shows image size on the statistics pane
 // @author       mja00
 // @match        https://rule34.xxx/index.php?page=post&s=view&id=*
@@ -109,7 +109,17 @@
             returnBytes = bytes.toFixed(dp);
         }
 
+        function truncateDecimals (num, digits) {
+            var numS = num.toString(),
+                decPos = 3,
+                substrLength = decPos == -1 ? numS.length : 1 + digits,
+                trimmedResult = numS.substr(0, substrLength),
+                finalResult = isNaN(trimmedResult) ? 0 : trimmedResult;
 
-        return returnBytes + ' ' + units[u];
+            return parseFloat(finalResult);
+        }
+
+
+        return truncateDecimals(returnBytes, 3) + ' ' + units[u];
     }
 })();
