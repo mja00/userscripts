@@ -6,6 +6,7 @@
 // @author       mja00
 // @match        https://rule34.xxx/index.php?page=post&s=view&id=*
 // @icon         https://www.google.com/s2/favicons?domain=rule34.xxx
+// @downloadURL  https://raw.githubusercontent.com/mja00/userscripts/main/rule34/more-image-info.js
 // @grant        none
 // ==/UserScript==
 
