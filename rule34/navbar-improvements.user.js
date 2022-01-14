@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Rule34.xxx: Navbar improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Adds and improves on the navbar
-// @author       You
+// @author       mja00
 // @match        https://rule34.xxx/index.php*
 // @icon         https://www.google.com/s2/favicons?domain=rule34.xxx
 // @run-at       document-end
@@ -49,14 +49,14 @@
     navbarList.insertBefore(inboxListElement, navbarList.children[1]);
 
     // Replace My Account with a proper dropdown
-    let myAccountListElement = document.createElement("li");
+    let myAccountListElement = navbarList.children[0]
     let userID = Cookies.get("user_id");
     myAccountListElement.setAttribute("class", "dropdown");
+    let myAccountATag = myAccountListElement.querySelector("a");
+    myAccountATag.setAttribute("class", "dropbtn");
+    let myAccountDropdownDiv = document.createElement("div");
+    myAccountDropdownDiv.setAttribute("class", "dropdown-content");
     let dropdownHTML = `
-        <a href="https://rule34.xxx/index.php?page=account&s=home" class="dropbtn">My Account
-          <i class="fa fa-caret-down"></i>
-        </a>
-        <div class="dropdown-content">
           <a href="https://rule34.xxx/index.php?page=account&s=profile&id=${userID}">My Profile</a>
           <a href="https://rule34.xxx/index.php?page=gmail&s=list">My Mail</a>
           <a href="https://rule34.xxx/index.php?page=favorites&s=view&id=${userID}">My Favorites</a>
@@ -65,9 +65,7 @@
           <a href="https://rule34.xxx/index.php?page=favorites&s=list">Everyone's Favorites</a>
           <a href="https://rule34.xxx/index.php?page=account&s=options">Options</a>
           <a href="https://rule34.xxx/index.php?page=account&s=login&code=01">Logout</a>
-        </div>
     `;
-    myAccountListElement.innerHTML = dropdownHTML;
-    navbarList.insertBefore(myAccountListElement, navbarList.children[1]);
-    navbarList.children[0].remove();
+    myAccountDropdownDiv.innerHTML = dropdownHTML;
+    myAccountListElement.appendChild(myAccountDropdownDiv);
 })();
