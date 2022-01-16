@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: New mail notification
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Sends a desktop notification when you receive new mail
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -11,17 +11,31 @@
 // ==/UserScript==
 
 let hasNotifiedAboutMail = false;
-let timeToWait = 30;
+let timeToWait = 5;
 
 function reportAJAX_Error (rspObj) {
     console.error (`TM scrpt => Error ${rspObj.status}!  ${rspObj.statusText}`);
 }
 
+function onNotificationInteract() {
+    GM_xmlhttpRequest ( {
+            method:         "GET",
+            url:            "https://rule34.xxx/index.php?page=gmail&s=list",
+            responseType:   "html",
+        } );
+    console.log("Notification was interacted with. Visiting inbox to clear notif");
+    window.focus();
+}
+
 function processJSON_Response (rspObj) {
-    let receivedMail = rspObj.response.includes("You have mail");
+    var parser = new DOMParser ();
+    var responseDoc = parser.parseFromString (rspObj.response, "text/html");
+    let mailElement = responseDoc.getElementById("has-mail-notice");
+    let receivedMail = !mailElement.style.display.includes("none");
+    console.log(receivedMail);
     if (receivedMail && !hasNotifiedAboutMail) {
         console.log("Mail has been received. Sending notification.")
-        GM_notification ( {title: 'Rule34.xxx', text: "You've received new mail!", silent: true, timeout: 5} );
+        GM_notification ( {title: 'Rule34.xxx', text: "You've received new mail!", silent: true, timeout: 5, onclick: onNotificationInteract, ondone: onNotificationInteract});
         hasNotifiedAboutMail = true;
     }
 }
