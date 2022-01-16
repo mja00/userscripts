@@ -11,7 +11,7 @@
 // ==/UserScript==
 
 let hasNotifiedAboutMail = false;
-let timeToWait = 5;
+let timeToWait = 30;
 
 function reportAJAX_Error (rspObj) {
     console.error (`TM scrpt => Error ${rspObj.status}!  ${rspObj.statusText}`);
@@ -33,7 +33,6 @@ function processJSON_Response (rspObj) {
     var responseDoc = parser.parseFromString (rspObj.response, "text/html");
     let mailElement = responseDoc.getElementById("has-mail-notice");
     let receivedMail = !mailElement.style.display.includes("none");
-    console.log(receivedMail);
     if (receivedMail && !hasNotifiedAboutMail) {
         console.log("Mail has been received. Sending notification.")
         GM_notification ( {title: 'Rule34.xxx', text: "You've received new mail!", silent: true, timeout: 5, onclick: onNotificationInteract, ondone: onNotificationInteract});
