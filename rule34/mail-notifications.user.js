@@ -25,6 +25,7 @@ function onNotificationInteract() {
         } );
     console.log("Notification was interacted with. Visiting inbox to clear notif");
     window.focus();
+    hasNotifiedAboutMail = false;
 }
 
 function processJSON_Response (rspObj) {
