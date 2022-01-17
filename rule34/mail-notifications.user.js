@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: New mail notification
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  Sends a desktop notification when you receive new mail
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -28,6 +28,19 @@ function onNotificationInteract() {
     hasNotifiedAboutMail = false;
 }
 
+function checkForNewMail() {
+    console.log("Checking for new mail")
+    GM_xmlhttpRequest ( {
+        method:         "GET",
+        url:            "https://rule34.xxx/index.php?page=account&s=home",
+        responseType:   "html",
+        onload:         processJSON_Response,
+        onabort:        reportAJAX_Error,
+        onerror:        reportAJAX_Error,
+        ontimeout:      reportAJAX_Error
+    } );
+}
+
 function processJSON_Response (rspObj) {
     var parser = new DOMParser ();
     var responseDoc = parser.parseFromString (rspObj.response, "text/html");
@@ -40,20 +53,14 @@ function processJSON_Response (rspObj) {
     }
 }
 
+
 (function() {
     'use strict';
+    // Check on page load
+    checkForNewMail();
 
     // Create a function that runs every so often
     javascript:setInterval(function(){
-        console.log("Checking for new mail")
-        GM_xmlhttpRequest ( {
-            method:         "GET",
-            url:            "https://rule34.xxx/index.php?page=account&s=home",
-            responseType:   "html",
-            onload:         processJSON_Response,
-            onabort:        reportAJAX_Error,
-            onerror:        reportAJAX_Error,
-            ontimeout:      reportAJAX_Error
-        } );
+        checkForNewMail();
     }, timeToWait * 1000);
 })();
