@@ -12,6 +12,8 @@
 // @grant        GM_notification
 // @grant        GM_xmlhttpRequest
 // @require      https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js
+// @downloadURL  https://github.com/mja00/userscripts/raw/main/rule34/kivls-improvements.user.js
+// @updateURL    https://github.com/mja00/userscripts/raw/main/rule34/kivls-improvements.user.js
 // ==/UserScript==
 
 // First we'll get all of our settings out of the way
