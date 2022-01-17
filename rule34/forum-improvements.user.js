@@ -192,7 +192,6 @@ if (isPage_opt) {
   );
 } else {
   let blacklist = blacklistedUsers;
-    console.log(blacklist);
 
   function addBlacklistButtonToPost(element, name) {
     let buttonElement = document.createElement("button");
@@ -243,8 +242,6 @@ if (isPage_opt) {
         console.log("Found post by " + name + ". Removing.");
         parent.remove();
       }
-    } else {
-        console.log(`${name} not in blacklist.`);
     }
   }
 }
