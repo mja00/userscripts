@@ -9,7 +9,6 @@
 // @icon         https://www.google.com/s2/favicons?domain=rule34.xxx
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @exclude      https://rule34.xxx/index.php?page=forum&s=view&id=6538
 // ==/UserScript==
 
 // Strips HTML elements from text, used to get the character count of forum posts
