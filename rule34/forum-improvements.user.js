@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Forum improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Various forum improvements
 // @author       You
 // @match        https://rule34.xxx/index.php?page=forum&s=view*
@@ -192,6 +192,7 @@ if (isPage_opt) {
   );
 } else {
   let blacklist = blacklistedUsers;
+    console.log(blacklist);
 
   function addBlacklistButtonToPost(element, name) {
     let buttonElement = document.createElement("button");
@@ -200,12 +201,12 @@ if (isPage_opt) {
     buttonElement.style.backgroundColor = "lightcoral";
     buttonElement.style.fontSize = "14px";
     buttonElement.onclick = function () {
-      let tempBlacklist = GM_getValue("blacklist", []);
+      let tempBlacklist = GM_getValue(blacklistedUsers_, []);
       if (tempBlacklist.includes(name)) {
         console.log(`${name} is already in the blacklist so removing post`);
       } else {
         tempBlacklist.push(name);
-        GM_setValue("blacklist", tempBlacklist);
+        GM_setValue(blacklistedUsers_, tempBlacklist);
         blacklist = tempBlacklist;
         console.log(`${name} added to the blacklist.`);
         location.reload();
@@ -242,6 +243,8 @@ if (isPage_opt) {
         console.log("Found post by " + name + ". Removing.");
         parent.remove();
       }
+    } else {
+        console.log(`${name} not in blacklist.`);
     }
   }
 }
