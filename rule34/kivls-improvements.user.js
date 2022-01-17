@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Kivl's Improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.3
 // @description  A bunch of improvements for the Rule34.xxx website created by Kivl
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -11,6 +11,7 @@
 // @grant        GM_getValue
 // @grant        GM_notification
 // @grant        GM_xmlhttpRequest
+// @grant        GM_info
 // @require      https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js
 // @downloadURL  https://github.com/mja00/userscripts/raw/main/rule34/kivls-improvements.user.js
 // @updateURL    https://github.com/mja00/userscripts/raw/main/rule34/kivls-improvements.user.js
@@ -183,6 +184,12 @@ if (!isPage_main) {
         myAccountDropdownDiv.innerHTML = dropdownHTML;
         myAccountListElement.appendChild(myAccountDropdownDiv);
     }
+
+    // This will append a center tag to the body with the version of the script
+    let scriptVersion = GM_info.script.version;
+    let scriptVersionElement = document.createElement("center");
+    scriptVersionElement.innerHTML = `<p>Kivl's Improvements version: ${scriptVersion} | Report issues <a href="https://github.com/mja00/userscripts/issues">here</a></p>`;
+    document.body.appendChild(scriptVersionElement);
 }
 
 // Forums related modifications
