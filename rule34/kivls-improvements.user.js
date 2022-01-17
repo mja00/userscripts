@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Kivl's Improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.2
 // @description  A bunch of improvements for the Rule34.xxx website created by Kivl
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
