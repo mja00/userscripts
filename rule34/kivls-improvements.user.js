@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Kivl's Improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @description  A bunch of improvements for the Rule34.xxx website created by Kivl
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -100,7 +100,7 @@ if (receiveMailNotification) {
         window.focus();
         hasNotifiedAboutMail = false;
     }
-    
+
     function checkForNewMail() {
         console.log("Checking for new mail")
         GM_xmlhttpRequest ( {
@@ -134,7 +134,7 @@ if (receiveMailNotification) {
     javascript:setInterval(function(){
         checkForNewMail();
     }, timeToWait * 1000);
-    
+
 }
 
 // Navar modifications
@@ -233,7 +233,7 @@ if (isPage_forum) {
 
             // Adds our blacklist button
             addBlacklistButtonToPost(item, name);
-            
+
             /* Removes a post if:
             * - The post is from a blacklisted user
             * - The post is empty(length of 1)
@@ -241,7 +241,28 @@ if (isPage_forum) {
             */
             if (blacklistedUsers.includes(name) || contentLength == 1 || (contentLength > maxContentLength && scrubMaxLength)) {
                 console.log("Found post by " + name + ". Removing.");
-                parent.remove();
+                parent.querySelector(".content").style.display = "none";
+                parent.style.marginBottom = "0";
+                item.style.display = "none";
+                // Append our own content div saying it was hidden
+                let contentDiv = document.createElement("div");
+                contentDiv.className = "content";
+                contentDiv.innerHTML = `Post by ${name} hidden.`
+
+                let showButton = document.createElement("button");
+                showButton.innerHTML = "Show Anyway";
+                showButton.style.border = "none";
+                showButton.style.backgroundColor = "inherit";
+                showButton.style.color = "blue";
+                showButton.onclick = function () {
+                    contentDiv.style.display = "none";
+                    parent.querySelector(".content").style.removeProperty("display");
+                    item.style.removeProperty("display");
+                    parent.style.removeProperty("margin-bottom");
+                }
+
+                contentDiv.appendChild(showButton);
+                parent.appendChild(contentDiv);
               }
         }
     }
@@ -443,7 +464,7 @@ function stringToArray(string) {
   return newArray;
 }
 
-// Specifically for making options 
+// Specifically for making options
 
 // We'll make a function for creating checkboxes
 function makeCB(setv_, setv) {
