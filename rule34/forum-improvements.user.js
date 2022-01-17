@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Forum improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.0
 // @description  Various forum improvements
 // @author       You
 // @match        https://rule34.xxx/index.php?page=forum&s=view*
