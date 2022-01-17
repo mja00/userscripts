@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Kivl's Improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      1.5
 // @description  A bunch of improvements for the Rule34.xxx website created by Kivl
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -12,7 +12,9 @@
 // @grant        GM_notification
 // @grant        GM_xmlhttpRequest
 // @grant        GM_info
+// @grant        GM_listValues
 // @require      https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js
+// @require      https://raw.githubusercontent.com/eligrey/FileSaver.js/master/dist/FileSaver.js
 // @downloadURL  https://github.com/mja00/userscripts/raw/main/rule34/kivls-improvements.user.js
 // @updateURL    https://github.com/mja00/userscripts/raw/main/rule34/kivls-improvements.user.js
 // ==/UserScript==
@@ -57,6 +59,25 @@ function getSetting(settingName, settingDefault) {
         value = settingDefault;
     }
     return value;
+}
+
+function saveSettingsToDisk() {
+
+    let jsonData = {};
+    let values = GM_listValues();
+
+    for (let i = 0; i < values.length; i++) {
+        let name = values[i]
+        jsonData[name] = GM_getValue(name, null);
+    }
+
+    const str = JSON.stringify(jsonData);
+    const bytes = new TextEncoder().encode(str);
+    const blob = new Blob([bytes], {
+        type: "application/json;charset=utf-8"
+    });
+
+    saveAs(blob, "backup.json");
 }
 
 
@@ -295,6 +316,7 @@ if (isPage_forum) {
 // We first wanna check if they're on the options page and if so, we'll add our custom settings to it
 if (isPage_opt) {
     let vtbody = document.body.getElementsByTagName("tbody")[0];
+    let vtfoot = document.body.getElementsByTagName("tfoot")[0];
 
     // We'll add a custom splitter in the table for our settings
     makeRow(
@@ -430,6 +452,9 @@ if (isPage_opt) {
         "<h3>Above are the settings for Kivl's improvement script.</h3>",
         vtbody
     );
+
+    // Add our custom backup button
+    addBackupButton(vtfoot);
 }
 
 // Here's where we hold a bunch of our functions
@@ -553,6 +578,18 @@ function makeRow(title, content, vtbody) {
     headerTD.innerHTML = "<strong>" + content;
     headerTR.appendChild(headerTD);
     vtbody.appendChild(headerTR);
+}
+
+// Adds our backup button
+function addBackupButton(vtfoot) {
+    let buttonTD = vtfoot.querySelector("td");
+    let backupButton = document.createElement("button");
+    backupButton.innerHTML = "Backup Script Settings";
+    backupButton.title = "Saves the settings from the Kivl's Improvements script to disk in json format"
+    backupButton.onclick = function() {
+        saveSettingsToDisk();
+    }
+    buttonTD.appendChild(backupButton);
 }
 
 function GM_addStyle(css) {
