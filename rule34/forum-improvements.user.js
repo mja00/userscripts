@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Forum improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.2
 // @description  Various forum improvements
 // @author       You
 // @match        https://rule34.xxx/index.php?page=forum&s=view*
@@ -50,6 +50,14 @@ var scrubForums = getSetting(scrubForums_, true);
 var blacklistedUsers_ = "blacklistedUsers";
 var blacklistedUsers = getSetting(blacklistedUsers_, []);
 
+// Max content length settings
+var maxContentLength_ = "maxContentLength";
+var maxContentLength = getSetting(maxContentLength_, 1500);
+if (maxContentLength == -1) {
+  // Set a high value for max content length
+  maxContentLength = 999999999;
+}
+
 // Our setting getting function
 function getSetting(settingName, settingDefault) {
   let value = GM_getValue(settingName, null);
@@ -83,24 +91,6 @@ function makeCB(setv_, setv) {
   return label;
 }
 
-// Then we'll need one for modifying the form
-function makeCB_form(setv_, setv, name, desc, vtbody) {
-  let vtr = document.createElement("tr");
-  let vth = document.createElement("th");
-  let vlabel = document.createElement("label");
-  vlabel.className = "block";
-  vlabel.innerHTML = name;
-  vth.appendChild(vlabel);
-  let vp = document.createElement("p");
-  vp.innerHTML = desc;
-  vth.appendChild(vp);
-  vtr.appendChild(vth);
-  let vtd = document.createElement("td");
-  vtd.appendChild(makeCB(setv_, setv));
-  vtr.appendChild(vtd);
-  vtbody.appendChild(vtr);
-}
-
 // We'll make a function for creating textareas
 function makeTA(setv_, setv) {
   let textDiv = document.createElement("div");
@@ -121,8 +111,25 @@ function makeTA(setv_, setv) {
   return textDiv;
 }
 
-// Then we'll need one for modifying the form
-function makeTA_form(setv_, setv, name, desc, vtbody) {
+// Custom number inputs
+function makeNum(setv_, setv) {
+  let label = document.createElement("label");
+  label.className = "numberContainer";
+  let input = document.createElement("input");
+  input.type = "number";
+  input.value = GM_getValue(setv_, setv);
+  input.addEventListener("change", function () {
+    GM_setValue(setv_, this.value);
+    setv = this.value;
+  });
+  let span = document.createElement("span");
+  span.className = "number";
+  label.appendChild(input);
+  label.appendChild(span);
+  return label;
+}
+
+function addToForm(setv_, setv, name, desc, vtbody, child) {
   let vtr = document.createElement("tr");
   let vth = document.createElement("th");
   let vlabel = document.createElement("label");
@@ -134,7 +141,7 @@ function makeTA_form(setv_, setv, name, desc, vtbody) {
   vth.appendChild(vp);
   vtr.appendChild(vth);
   let vtd = document.createElement("td");
-  vtd.appendChild(makeTA(setv_, setv));
+  vtd.appendChild(child);
   vtr.appendChild(vtd);
   vtbody.appendChild(vtr);
 }
@@ -167,21 +174,33 @@ if (isPage_opt) {
   );
 
   // All our custom checkboxes
-  makeCB_form(
+  addToForm(
     scrubForums_,
     scrubForums,
     "Scrub Forums",
     "Removes posts from blacklisted users",
-    vtbody
+    vtbody,
+    makeCB(scrubForums_, scrubForums)
+  );
+
+  // All our custom number inputs
+  addToForm(
+    maxContentLength_,
+    maxContentLength,
+    "Max Content Length",
+    "The maximum length of a post in characters before it's removed. Default is 1500. -1 for no limit.",
+    vtbody,
+    makeNum(maxContentLength_, maxContentLength)
   );
 
   // All our custom textareas
-  makeTA_form(
+  addToForm(
     blacklistedUsers_,
     blacklistedUsers,
     "Blacklisted Users",
     "Enter a list of usernames to remove from the forums. One per line. It ignores blank lines. It is case sensitive.",
-    vtbody
+    vtbody,
+    makeTA(blacklistedUsers_, blacklistedUsers)
   );
 
   // We now add another row to mark the end of our settings
@@ -237,7 +256,7 @@ if (isPage_opt) {
     addBlacklistButtonToPost(item, name);
 
     // Removes post if it's in the blacklist or over 1500 chars
-    if (blacklist.includes(name) || contentLength == 1) {
+    if (blacklist.includes(name) || contentLength == 1 || contentLength > maxContentLength) {
       if (scrubForums) {
         console.log("Found post by " + name + ". Removing.");
         parent.remove();
