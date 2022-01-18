@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Kivl's Improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.6
 // @description  A bunch of improvements for the Rule34.xxx website created by Kivl
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -92,11 +92,8 @@ var isPage_main = (document.location.href == "http://rule34.xxx/" || document.lo
 // Post listing page
 if (isPage_posts) {
     if (openPostsInNewTab) {
-        let imageListDiv = document.querySelectorAll("#post-list > div.content > div.image-list > span");
-
-        for (const item of imageListDiv) {
-            item.querySelector("a").setAttribute("target", "_blank");
-        }
+        fixATags(true);
+        javascript:setInterval(function() { fixATags(false); }, 2 * 1000);
     }
 }
 
@@ -661,5 +658,18 @@ function timeDifference(current, previous) {
             return num + ' year ago';
         }
         return num + ' years ago';
+    }
+}
+
+function fixATags(initialLoad) {
+    let imageListDiv;
+    if (initialLoad) {
+        imageListDiv = document.querySelectorAll("#post-list > div.content > div.image-list > span");
+    } else {
+        imageListDiv = document.querySelectorAll("#post-list > div.content > span");
+    }
+
+    for (const item of imageListDiv) {
+        item.querySelector("a").setAttribute("target", "_blank");
     }
 }
