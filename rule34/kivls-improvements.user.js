@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Kivl's Improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.6
+// @version      1.7
 // @description  A bunch of improvements for the Rule34.xxx website created by Kivl
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -43,6 +43,8 @@ var openPostsInNewTab_ = "openPostsInNewTab"; var openPostsInNewTab = getSetting
 var receiveMailNotification_ = "receiveMailNotification"; var receiveMailNotification = getSetting(receiveMailNotification_, true);
 // Setting for mail check interval in seconds
 var mailCheckInterval_ = "mailCheckInterval"; var mailCheckInterval = getSetting(mailCheckInterval_, 30);
+// Setting for using the keys on posts to go forward and back
+var arrowKeysToMove_ = "arrowKeysToMove"; var arrowKeysToMove = getSetting(arrowKeysToMove_, true);
 
 // Max content length settings
 var maxContentLength_ = "maxContentLength"; var maxContentLength = getSetting(maxContentLength_, 1500);
@@ -94,6 +96,32 @@ if (isPage_posts) {
     if (openPostsInNewTab) {
         fixATags(true);
         javascript:setInterval(function() { fixATags(false); }, 2 * 1000);
+    }
+}
+
+// Post page
+if (isPage_post) {
+    // Get current post ID
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const postID = urlParams.get('id');
+
+    let targetPostID = postID;
+
+    //We want to register an event listener now
+    if (arrowKeysToMove) {
+        document.addEventListener('keydown', onKeyDown, true);
+    }
+
+    function onKeyDown(event) {
+        if (event.key == "ArrowLeft") {
+            targetPostID++;
+        } else if (event.key == "ArrowRight") {
+            targetPostID--;
+        } else {
+            return;
+        }
+        window.location.href = `https://rule34.xxx/index.php?page=post&s=view&id=${targetPostID}`;
     }
 }
 
@@ -381,6 +409,13 @@ if (isPage_opt) {
         "Opens posts in a new tab when you click on the thumbnail",
         vtbody,
         makeCB(openPostsInNewTab_, openPostsInNewTab),
+        "True"
+    );
+    addToForm(
+        "Use Arrow Keys to Browse Posts",
+        "Lets you use the left and right arrows to go forwards and back through posts.",
+        vtbody,
+        makeCB(arrowKeysToMove_, arrowKeysToMove),
         "True"
     )
 
