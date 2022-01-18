@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Kivl's Improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.7
+// @version      1.8
 // @description  A bunch of improvements for the Rule34.xxx website created by Kivl
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -113,15 +113,26 @@ if (isPage_post) {
         document.addEventListener('keydown', onKeyDown, true);
     }
 
+    function decAndCheck() {
+        targetPostID--;
+        let targetURL = `https://rule34.xxx/index.php?page=post&s=view&id=${targetPostID}`;
+        checkPostID(targetPostID, true);
+    }
+
+    function incAndCheck() {
+        targetPostID++;
+        let targetURL = `https://rule34.xxx/index.php?page=post&s=view&id=${targetPostID}`;
+        checkPostID(targetPostID, false);
+    }
+
     function onKeyDown(event) {
         if (event.key == "ArrowLeft") {
-            targetPostID++;
+            incAndCheck();
         } else if (event.key == "ArrowRight") {
-            targetPostID--;
+            decAndCheck();
         } else {
             return;
         }
-        window.location.href = `https://rule34.xxx/index.php?page=post&s=view&id=${targetPostID}`;
     }
 }
 
@@ -706,5 +717,36 @@ function fixATags(initialLoad) {
 
     for (const item of imageListDiv) {
         item.querySelector("a").setAttribute("target", "_blank");
+    }
+}
+
+function checkPostID(postID, decrement) {
+    let url = `https://rule34.xxx/index.php?page=post&s=view&id=${postID}`;
+    GM_xmlhttpRequest ( {
+        method:         "HEAD",
+        url:            url,
+        responseType:   "html",
+        onload:         processResponseCode,
+        context: {
+            postID: postID,
+            decrement: decrement
+        }
+    });
+
+    function processResponseCode(rspObj) {
+        if (url != rspObj.finalUrl) {
+            let currentPostChecked = rspObj.context.postID;
+            let decrement = rspObj.context.decrement;
+            console.log(`${currentPostChecked} redirected us!`)
+            // Decrement again and re-try
+            if (decrement) {
+                currentPostChecked--;
+            } else {
+                currentPostChecked++;
+            }
+            checkPostID(currentPostChecked, decrement);
+        } else {
+            window.location.href = url;
+        }
     }
 }
