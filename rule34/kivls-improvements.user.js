@@ -1,8 +1,7 @@
-
 // ==UserScript==
 // @name         Rule34.xxx: Kivl's Improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.9
+// @version      1.10
 // @description  A bunch of improvements for the Rule34.xxx website created by Kivl
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -47,6 +46,8 @@ var mailCheckInterval_ = "mailCheckInterval"; var mailCheckInterval = getSetting
 var arrowKeysToMove_ = "arrowKeysToMove"; var arrowKeysToMove = getSetting(arrowKeysToMove_, true);
 // Hide blacklisted users entirely
 var completelyHideBlacklist_ = "completelyHideBlacklist"; var completelyHideBlacklist = getSetting(completelyHideBlacklist_, false);
+// Keep track of what pages you've seen for a forum thread
+var trackForumThreadPages_ = "trackForumThreadPages"; var trackForumThreadPages = getSetting(trackForumThreadPages_, false);
 
 // Max content length settings
 var maxContentLength_ = "maxContentLength"; var maxContentLength = getSetting(maxContentLength_, 1500);
@@ -336,19 +337,48 @@ if (isPage_forum) {
         buttonElement.style.backgroundColor = "lightcoral";
         buttonElement.style.fontSize = "14px";
         buttonElement.onclick = function () {
-          let tempBlacklist = GM_getValue(blacklistedUsers_, []);
-          if (tempBlacklist.includes(name)) {
-            console.log(`${name} is already in the blacklist so removing post`);
-          } else {
-            tempBlacklist.push(name);
-            GM_setValue(blacklistedUsers_, tempBlacklist);
-            blacklistedUsers = tempBlacklist;
-            console.log(`${name} added to the blacklist.`);
-            location.reload();
-          }
+            let tempBlacklist = GM_getValue(blacklistedUsers_, []);
+            if (tempBlacklist.includes(name)) {
+                console.log(`${name} is already in the blacklist so removing post`);
+            } else {
+                tempBlacklist.push(name);
+                GM_setValue(blacklistedUsers_, tempBlacklist);
+                blacklistedUsers = tempBlacklist;
+                console.log(`${name} added to the blacklist.`);
+                location.reload();
+            }
         };
         element.appendChild(buttonElement);
-      }
+    }
+    if(trackForumThreadPages){
+        // This is for our forum page tracking
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const threadID = urlParams.get("id");
+        const pageID = urlParams.get("pid");
+        const currentPage = (pageID / 15) + 1;
+        const settingValue = `thread_${threadID}`;
+
+        // Get the array for the current thread
+        let threadArray = getSetting(settingValue, []);
+
+        // Check if the current page is already in that array
+        if (!threadArray.includes(currentPage)) {
+            threadArray.push(currentPage);
+            GM_setValue(settingValue, threadArray);
+        } else {
+            console.log(`Page ${currentPage} is already in array`);
+        }
+
+        // We now need the paginator, luckily it's got an ID
+        let paginatorElements = document.getElementById("paginator").querySelectorAll("a");
+        for (const item of paginatorElements) {
+            let itemInner = item.innerText.trim();
+            if (!(itemInner.includes("<") || itemInner.includes(">")) && threadArray.includes(parseInt(itemInner))) {
+                item.style.backgroundColor = "lightgreen";
+            }
+        }
+    }
 }
 
 
@@ -449,6 +479,13 @@ if (isPage_opt) {
         vtbody,
         makeCB(scrubForums_, scrubForums),
         "True"
+    );
+    addToForm(
+        "Track Forum Thread Pages Viewed",
+        "This'll keep track of what pages you view on a forum thread and mark them on the paginator",
+        vtbody,
+        makeCB(trackForumThreadPages_, trackForumThreadPages),
+        "False"
     );
     addToForm(
         "Forum Relative Time",
