@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Kivl's Improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.8
+// @version      1.9
 // @description  A bunch of improvements for the Rule34.xxx website created by Kivl
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -45,6 +45,8 @@ var receiveMailNotification_ = "receiveMailNotification"; var receiveMailNotific
 var mailCheckInterval_ = "mailCheckInterval"; var mailCheckInterval = getSetting(mailCheckInterval_, 30);
 // Setting for using the keys on posts to go forward and back
 var arrowKeysToMove_ = "arrowKeysToMove"; var arrowKeysToMove = getSetting(arrowKeysToMove_, true);
+// Hide blacklisted users entirely
+var completelyHideBlacklist_ = "completelyHideBlacklist"; var completelyHideBlacklist = getSetting(completelyHideBlacklist_, false);
 
 // Max content length settings
 var maxContentLength_ = "maxContentLength"; var maxContentLength = getSetting(maxContentLength_, 1500);
@@ -301,25 +303,27 @@ if (isPage_forum) {
                 parent.querySelector(".content").style.display = "none";
                 parent.style.marginBottom = "0";
                 item.style.display = "none";
-                // Append our own content div saying it was hidden
-                let contentDiv = document.createElement("div");
-                contentDiv.className = "content";
-                contentDiv.innerHTML = `Post by ${name} hidden.`
+                if (!completelyHideBlacklist) {
+                    // Append our own content div saying it was hidden
+                    let contentDiv = document.createElement("div");
+                    contentDiv.className = "content";
+                    contentDiv.innerHTML = `Post by ${name} hidden.`
 
-                let showButton = document.createElement("button");
-                showButton.innerHTML = "Show Anyway";
-                showButton.style.border = "none";
-                showButton.style.backgroundColor = "inherit";
-                showButton.style.color = "blue";
-                showButton.onclick = function () {
-                    contentDiv.style.display = "none";
-                    parent.querySelector(".content").style.removeProperty("display");
-                    item.style.removeProperty("display");
-                    parent.style.removeProperty("margin-bottom");
+                    let showButton = document.createElement("button");
+                    showButton.innerHTML = "Show Anyway";
+                    showButton.style.border = "none";
+                    showButton.style.backgroundColor = "inherit";
+                    showButton.style.color = "blue";
+                    showButton.onclick = function () {
+                        contentDiv.style.display = "none";
+                        parent.querySelector(".content").style.removeProperty("display");
+                        item.style.removeProperty("display");
+                        parent.style.removeProperty("margin-bottom");
+                    }
+
+                    contentDiv.appendChild(showButton);
+                    parent.appendChild(contentDiv);
                 }
-
-                contentDiv.appendChild(showButton);
-                parent.appendChild(contentDiv);
               }
         }
     }
@@ -488,6 +492,13 @@ if (isPage_opt) {
         makeTA(blacklistedUsers_, blacklistedUsers),
         "Empty"
     );
+    addToForm(
+        "Completely Hide Blacklisted Users",
+        "Hides blacklisted users' posts entirely, doesn't even show the 'Show Anyway' prompt.",
+        vtbody,
+        makeCB(completelyHideBlacklist_, completelyHideBlacklist),
+        "False"
+    )
 
     // We now add another row to mark the end of our settings
     makeRow(
