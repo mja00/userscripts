@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Kivl's Improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.10
+// @version      1.11
 // @description  A bunch of improvements for the Rule34.xxx website created by Kivl
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -218,7 +218,7 @@ if (!isPage_main) {
     if (myAccountLink) {
         // Injects the CSS needed for the navbar element replacement
         GM_addStyle(".dropdown .dropbtn { font-size: 16px; border: none; outline: none; background-color: inherit; font-family: inherit; margin: 0; color: #009;}");
-        GM_addStyle(".dropdown-content { display: none; position: absolute; background-color: #93c393; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }");
+        GM_addStyle(".dropdown-content { display: none; position: absolute; background-color: var(--c-bg, #93c393); min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }");
         GM_addStyle(".dropdown-content a { float: none; color: black; padding: 12px 16px; text-decoration: none; display: block; text-align: left; }");
         GM_addStyle(".dropdown-content a:hover { background-color: #ddd; }");
         GM_addStyle(".dropdown:hover .dropdown-content { display: block; }");
