@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Kivl's Improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.11
+// @version      1.12
 // @description  A bunch of improvements for the Rule34.xxx website created by Kivl
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -757,14 +757,15 @@ function timeDifference(current, previous) {
 
 function fixATags(initialLoad) {
     let imageListDiv;
-    if (initialLoad) {
-        imageListDiv = document.querySelectorAll("#post-list > div.content > div.image-list > span");
-    } else {
-        imageListDiv = document.querySelectorAll("#post-list > div.content > span");
-    }
+    imageListDiv = document.querySelectorAll("#post-list > div.content > div.image-list > span");
 
     for (const item of imageListDiv) {
-        item.querySelector("a").setAttribute("target", "_blank");
+        try {
+            item.querySelector("a").setAttribute("target", "_blank");
+        } catch (error) { 
+            continue;
+            console.log("Caught error attempting to set A tag");
+        }
     }
 }
 
