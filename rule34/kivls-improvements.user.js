@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rule34.xxx: Kivl's Improvements
 // @namespace    http://tampermonkey.net/
-// @version      1.12
+// @version      1.13
 // @description  A bunch of improvements for the Rule34.xxx website created by Kivl
 // @author       Kivl/mja00
 // @match        https://rule34.xxx/*
@@ -92,6 +92,7 @@ var isPage_posts = document.location.href.includes("index.php?page=post&s=list")
 var isPage_fav = document.location.href.includes("index.php?page=favorites&s=view");
 var isPage_opt = document.location.href.includes("index.php?page=account&s=options");
 var isPage_forum = document.location.href.includes("index.php?page=forum&s=view&id=");
+var isPage_forum_index = document.location.href.includes("index.php?page=forum&s=list");
 var isPage_main = (document.location.href == "http://rule34.xxx/" || document.location.href == "https://rule34.xxx/");
 
 // Post listing page
@@ -253,6 +254,17 @@ if (!isPage_main) {
 }
 
 // Forums related modifications
+if (isPage_forum_index) {
+    let table = document.querySelector("#forum > table > tbody").children;
+    for (const item of table) {
+        let topic = item.querySelector("a").innerHTML;
+        if (topic === "") {
+            console.log("Found empty topic");
+            item.querySelector("a").innerHTML = "Empty Topic. Set by script!"
+        }
+    }
+}
+
 if (isPage_forum) {
     // We'll first do the forums timestamp modifications
     let dateOptions = {year: 'numeric', month: 'numeric', day: 'numeric', minute: 'numeric', hour: 'numeric' };
