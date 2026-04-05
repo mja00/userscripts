@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         X.com: Mass Like
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Like all (or the top N most recent) posts on a Twitter/X profile page
 // @author       mja00
 // @match        https://x.com/*
@@ -273,10 +273,26 @@
     }
 
     // --- Engine ---
+    function isRetweet(article) {
+        // Retweets have a "[User] reposted" social context banner above the tweet
+        return !!article.querySelector('[data-testid="socialContext"]');
+    }
+
+    function isReply(article) {
+        // Replies have a standalone "Replying to" span (distinct from tweet body text)
+        var spans = article.querySelectorAll('span');
+        for (var i = 0; i < spans.length; i++) {
+            if (spans[i].childNodes.length === 1 &&
+                spans[i].textContent === 'Replying to') return true;
+        }
+        return false;
+    }
+
     function getUnlikedButtons() {
         var tweets = document.querySelectorAll(SEL_TWEET);
         var buttons = [];
         tweets.forEach(function (tweet) {
+            if (isRetweet(tweet) || isReply(tweet)) return;
             var btn = tweet.querySelector(SEL_LIKE);
             if (btn) buttons.push(btn);
         });
