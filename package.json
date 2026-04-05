@@ -1,0 +1,26 @@
+{
+  "name": "userscripts",
+  "version": "1.0.0",
+  "description": "A bunch of userscripts for various sites, either made for my use or made under a request",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint \"**/*.user.js\"",
+    "lint:fix": "eslint \"**/*.user.js\" --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mja00/userscripts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/mja00/userscripts/issues"
+  },
+  "homepage": "https://github.com/mja00/userscripts#readme",
+  "devDependencies": {
+    "eslint": "^10.2.0",
+    "globals": "^17.4.0"
+  }
+}
