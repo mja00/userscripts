@@ -16,6 +16,7 @@ export default [
                 GM_xmlhttpRequest: 'readonly',
                 GM_info: 'readonly',
                 GM_listValues: 'readonly',
+                unsafeWindow: 'readonly',
                 // External libraries loaded via @require
                 Cookies: 'readonly',
                 saveAs: 'readonly',
